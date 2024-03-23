@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'io.qameta.allure' version '2.8.1'
+}
+
+allure {
+    version = '2.14.0'
+    autoconfigure = true
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'io.appium', name: 'java-client', version: '7.5.1'
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task allureRep(type: Exec){
+    executable "bash"
+    args "-c", "allure generate  build/allure-results --clean -o allure-reports"
+    doLast {
+        def file = project.file('allure-reports/index.html').getAbsolutePath().toURI()
+        project.logger.lifecycle("Allure report: file://" + file)
+    }
+}
+test.finalizedBy(allureRep)
